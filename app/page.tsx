@@ -2,7 +2,7 @@
 
 import { Shield, TrendingUp, FlaskConical, Github, ArrowUpRight, Zap } from 'lucide-react'
 
-const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; href: string | null; tag: string }[] = [
+const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; href: string | undefined; tag: string }[] = [
   {
     icon: Shield,
     name: '硬件钱包筛选器',
@@ -24,7 +24,7 @@ const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; 
     name: 'MSX 研究院追踪池',
     nameEn: 'MSX Research Tracker',
     desc: '麦通前瞻标的表现追踪 + 机会温度计',
-    href: null,
+    href: undefined,
     tag: '量化研究',
   },
 ]
