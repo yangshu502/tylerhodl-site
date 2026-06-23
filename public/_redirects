@@ -1,0 +1,4 @@
+/wallet https://tylerhodl.pages.dev/ 301
+/wallet/* https://tylerhodl.pages.dev/:splat 301
+/monitor https://haohaozhuanqian.pages.dev/monitor 301
+/monitor/* https://haohaozhuanqian.pages.dev/monitor/:splat 301
