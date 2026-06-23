@@ -2,7 +2,7 @@
 
 import { Shield, TrendingUp, FlaskConical, Github, ArrowUpRight, Zap } from 'lucide-react'
 
-const TOOLS = [
+const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; href: string | null; tag: string }[] = [
   {
     icon: Shield,
     name: '硬件钱包筛选器',
@@ -24,7 +24,7 @@ const TOOLS = [
     name: 'MSX 研究院追踪池',
     nameEn: 'MSX Research Tracker',
     desc: '麦通前瞻标的表现追踪 + 机会温度计',
-    href: '/msx',
+    href: null,
     tag: '量化研究',
   },
 ]
@@ -109,27 +109,34 @@ export default function Home() {
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-5">
           {TOOLS.map((tool) => {
             const Icon = tool.icon
+            const isAvailable = tool.href !== null
+            const Wrapper = isAvailable ? 'a' : 'div'
             return (
-              <a
+              <Wrapper
                 key={tool.name}
-                href={tool.href}
-                className="group relative flex flex-col rounded-xl border border-border bg-card p-6 text-left hover:border-neon/40 hover:shadow-[0_0_40px_#C2E03A0D] transition-all duration-300"
+                {...(isAvailable ? { href: tool.href } : {})}
+                className={`group relative flex flex-col rounded-xl border bg-card p-6 text-left transition-all duration-300 ${
+                  isAvailable
+                    ? 'border-border hover:border-neon/40 hover:shadow-[0_0_40px_#C2E03A0D] cursor-pointer'
+                    : 'border-border/40 opacity-50 cursor-not-allowed'
+                }`}
               >
                 {/* Top row */}
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground/50 border border-border/70 rounded px-2 py-0.5">
                     {tool.tag}
                   </span>
-                  <ArrowUpRight
-                    size={14}
-                    className="text-muted-foreground/30 group-hover:text-neon group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200"
-                  />
+                  {isAvailable ? (
+                    <ArrowUpRight size={14} className="text-muted-foreground/30 group-hover:text-neon group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
+                  ) : (
+                    <span className="text-[10px] text-muted-foreground/40 border border-border/40 rounded px-2 py-0.5">即将上线</span>
+                  )}
                 </div>
 
                 {/* Icon + Name */}
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-neon/8 border border-neon/15 group-hover:bg-neon/15 transition-colors shrink-0">
-                    <Icon size={16} className="text-neon" />
+                  <div className={`flex items-center justify-center w-9 h-9 rounded-lg border shrink-0 transition-colors ${isAvailable ? 'bg-neon/8 border-neon/15 group-hover:bg-neon/15' : 'bg-muted/30 border-border/30'}`}>
+                    <Icon size={16} className={isAvailable ? 'text-neon' : 'text-muted-foreground/40'} />
                   </div>
                   <div>
                     <div className="font-semibold text-sm text-foreground leading-tight">{tool.name}</div>
@@ -144,11 +151,11 @@ export default function Home() {
 
                 {/* CTA */}
                 <div className="mt-5 pt-4 border-t border-border/50">
-                  <span className="text-xs font-semibold text-neon/70 group-hover:text-neon transition-colors">
-                    启动工具 →
+                  <span className={`text-xs font-semibold transition-colors ${isAvailable ? 'text-neon/70 group-hover:text-neon' : 'text-muted-foreground/30'}`}>
+                    {isAvailable ? '启动工具 →' : '开发中…'}
                   </span>
                 </div>
-              </a>
+              </Wrapper>
             )
           })}
         </div>
