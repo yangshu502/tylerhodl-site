@@ -18,9 +18,9 @@ async function proxyUpstream(request) {
   const url = new URL(request.url);
   let upstream = null;
   if (url.pathname === '/monitor' || url.pathname.startsWith('/monitor/')) {
-    upstream = 'https://haohaozhuanqian.pages.dev' + url.pathname + url.search;
+    upstream = 'https://monitor.pages.dev' + url.pathname + url.search;
   } else if (url.pathname === '/wallet' || url.pathname.startsWith('/wallet/')) {
-    upstream = 'https://tylerhodl.pages.dev' + url.pathname + url.search;
+    upstream = 'https://wallet.pages.dev' + url.pathname + url.search;
   }
   if (!upstream) return null;
   const res = await fetch(upstream, {
