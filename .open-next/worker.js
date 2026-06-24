@@ -25,6 +25,9 @@ async function proxyUpstream(request) {
   if (url.pathname === '/wallet' || url.pathname.startsWith('/wallet/')) {
     upstream = 'https://tylerhodl.pages.dev' + url.pathname + url.search;
   } else
+  if (url.pathname === '/library' || url.pathname.startsWith('/library/')) {
+    upstream = 'https://tylerhodl-library.pages.dev' + url.pathname + url.search;
+  } else
   {}
   if (!upstream) return null;
 

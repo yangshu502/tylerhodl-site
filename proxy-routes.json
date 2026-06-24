@@ -1,5 +1,6 @@
 [
   { "prefix": "/monitor",  "upstream": "https://haohaozhuanqian.pages.dev" },
   { "prefix": "/research", "upstream": "https://research-3sk.pages.dev" },
-  { "prefix": "/wallet",   "upstream": "https://tylerhodl.pages.dev" }
+  { "prefix": "/wallet",   "upstream": "https://tylerhodl.pages.dev" },
+  { "prefix": "/library",  "upstream": "https://tylerhodl-library.pages.dev" }
 ]

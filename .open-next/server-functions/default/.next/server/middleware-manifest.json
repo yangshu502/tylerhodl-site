@@ -32,12 +32,20 @@
         {
           "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/wallet(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
           "originalSource": "/wallet/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/library(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+          "originalSource": "/library"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/library(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+          "originalSource": "/library/:path*"
         }
       ],
       "wasm": [],
       "assets": [],
       "env": {
-        "__NEXT_BUILD_ID": "p6xpYO1zC87tmMjuYfwkZ",
+        "__NEXT_BUILD_ID": "XBF1kjuv9zJMeCvl6rYE8",
         "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "oKGVFjgwWPLwSpNMkTMdVUnx+8LKcmhSz2UnJK406kQ=",
         "__NEXT_PREVIEW_MODE_ID": "80972c32473e84b901020bb6f0441e6e",
         "__NEXT_PREVIEW_MODE_SIGNING_KEY": "75229afd3cd937c7d85ed94a213f19a5f4b90185c93a20540f975508be44823b",

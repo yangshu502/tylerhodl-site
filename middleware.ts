@@ -55,5 +55,6 @@ export const config = {
     '/monitor', '/monitor/:path*',
     '/research', '/research/:path*',
     '/wallet', '/wallet/:path*',
+    '/library', '/library/:path*',
   ],
 }

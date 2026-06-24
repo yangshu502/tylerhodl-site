@@ -1,6 +1,6 @@
 'use client'
 
-import { Shield, TrendingUp, FlaskConical, BookOpen, ArrowUpRight, Zap, Sun, Moon, MessageCircle, ExternalLink, X } from 'lucide-react'
+import { Shield, TrendingUp, FlaskConical, BookOpen, Library, ArrowUpRight, Zap, Sun, Moon, MessageCircle, ExternalLink, X } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 type Tool = {
@@ -43,6 +43,13 @@ const TOOLS: Tool[] = [
     desc: '麦通前瞻标的表现追踪 + 机会温度计',
     href: undefined,
     tag: '量化研究',
+  },
+  {
+    icon: Library,
+    name: '投研知识库',
+    desc: '由 Tyler 持续整理和维护的 Web3 与投资知识库',
+    href: '/library/',
+    tag: '知识体系',
   },
 ]
 
