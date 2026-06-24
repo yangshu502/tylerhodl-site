@@ -9,7 +9,7 @@ const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; 
     name: '硬件钱包筛选器',
     nameEn: 'Hardware Wallet Picker',
     desc: '主流冷钱包横向对比，帮你选对第一个硬件钱包',
-    href: '/wallet',
+    href: '/wallet/',
     tag: 'Web3 安全',
   },
   {
@@ -17,7 +17,7 @@ const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; 
     name: '好好赚钱监控面板',
     nameEn: 'Portfolio Monitor',
     desc: '多资产投资组合收益追踪 + 纪律信号备忘录',
-    href: '/monitor',
+    href: '/monitor/',
     tag: '投资追踪',
   },
   {
@@ -258,7 +258,7 @@ export default function Home() {
             return (
               <Wrapper
                 key={tool.name}
-                {...(isAvailable ? { href: tool.href } : {})}
+                {...(isAvailable ? { href: tool.href, target: '_blank', rel: 'noopener noreferrer' } : {})}
                 className={`group relative flex flex-col rounded-xl border bg-card p-6 text-left transition-all duration-300 ${
                   isAvailable
                     ? 'border-border hover:border-neon/40 hover:shadow-[0_0_40px_#F7931A0D] cursor-pointer'
