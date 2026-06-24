@@ -20,7 +20,7 @@ async function proxyUpstream(request) {
     upstream = 'https://haohaozhuanqian.pages.dev' + url.pathname + url.search;
   } else if (url.pathname === '/wallet' || url.pathname.startsWith('/wallet/')) {
     upstream = 'https://tylerhodl.pages.dev' + url.pathname + url.search;
-  }
+  } else {}
   if (!upstream) return null;
   let res = await fetch(upstream, {
     method: request.method,

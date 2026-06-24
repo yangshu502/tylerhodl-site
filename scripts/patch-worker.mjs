@@ -1,31 +1,36 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs'
 
-// Clear any redirect rules that would intercept /monitor and /wallet before the Worker runs
-const redirectsPath = '.open-next/assets/_redirects';
-writeFileSync(redirectsPath, '');
-console.log('_redirects cleared');
+// 新增子站：只需编辑 proxy-routes.json，然后运行 npm run cf:rebuild
+const PROXY_ROUTES = JSON.parse(readFileSync('./proxy-routes.json', 'utf8'))
 
-const workerPath = '.open-next/worker.js';
-const original = readFileSync(workerPath, 'utf8');
+// 清空 assets/_redirects，防止 CF 静态资源层在 Worker 之前拦截
+const redirectsPath = '.open-next/assets/_redirects'
+writeFileSync(redirectsPath, '')
+console.log('_redirects cleared')
+
+const workerPath = '.open-next/worker.js'
+const original = readFileSync(workerPath, 'utf8')
 
 if (original.includes('proxyUpstream')) {
-  console.log('worker.js already patched, skipping.');
-  process.exit(0);
+  console.log('worker.js already patched, skipping.')
+  process.exit(0)
 }
+
+// 从 proxy-routes.json 动态生成路由判断代码
+const routeConditions = PROXY_ROUTES.map(r =>
+  `  if (url.pathname === '${r.prefix}' || url.pathname.startsWith('${r.prefix}/')) {\n` +
+  `    upstream = '${r.upstream}' + url.pathname + url.search;\n` +
+  `  } else`
+).join('\n') + '\n  {}'
 
 const proxyCode = `
 async function proxyUpstream(request) {
   const url = new URL(request.url);
   let upstream = null;
-  if (url.pathname === '/monitor' || url.pathname.startsWith('/monitor/')) {
-    upstream = 'https://haohaozhuanqian.pages.dev' + url.pathname + url.search;
-  } else if (url.pathname === '/wallet' || url.pathname.startsWith('/wallet/')) {
-    upstream = 'https://tylerhodl.pages.dev' + url.pathname + url.search;
-  }
+${routeConditions}
   if (!upstream) return null;
 
-  // Use redirect:'manual' — CF Workers 跨 Zone 时 redirect:'follow' 会把 301 透传给浏览器
-  // 手动跟跳转，最多 5 跳，确保最终响应不含 Location 头
+  // redirect:'manual' — CF Workers 跨 Zone 时 redirect:'follow' 会把 301 透传给浏览器
   let res = await fetch(upstream, {
     method: request.method,
     headers: {
@@ -50,28 +55,25 @@ async function proxyUpstream(request) {
       redirect: 'manual',
     });
   }
-
   const headers = new Headers(res.headers);
   headers.delete('transfer-encoding');
   headers.delete('content-encoding');
-  headers.delete('location'); // 绝不把上游跳转暴露给浏览器
+  headers.delete('location');
   return new Response(res.body, { status: res.status, headers });
 }
-`;
+`
 
-// Inject proxy before the default export fetch handler
-const patched = original.replace(
-  'export default {',
-  proxyCode + 'export default {'
-).replace(
-  'return runWithCloudflareRequestContext(request, env, ctx, async () => {',
-  'return runWithCloudflareRequestContext(request, env, ctx, async () => {\n            const proxyResp = await proxyUpstream(request);\n            if (proxyResp) return proxyResp;'
-);
+const patched = original
+  .replace('export default {', proxyCode + 'export default {')
+  .replace(
+    'return runWithCloudflareRequestContext(request, env, ctx, async () => {',
+    'return runWithCloudflareRequestContext(request, env, ctx, async () => {\n            const proxyResp = await proxyUpstream(request);\n            if (proxyResp) return proxyResp;'
+  )
 
 if (patched === original) {
-  console.error('ERROR: patch-worker.mjs could not find injection point in worker.js');
-  process.exit(1);
+  console.error('ERROR: patch-worker.mjs could not find injection point in worker.js')
+  process.exit(1)
 }
 
-writeFileSync(workerPath, patched);
-console.log('worker.js patched with proxy routes for /monitor and /wallet');
+writeFileSync(workerPath, patched)
+console.log(`worker.js patched — proxy routes: ${PROXY_ROUTES.map(r => r.prefix).join(', ')}`)

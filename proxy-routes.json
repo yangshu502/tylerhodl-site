@@ -1,0 +1,4 @@
+[
+  { "prefix": "/monitor", "upstream": "https://haohaozhuanqian.pages.dev" },
+  { "prefix": "/wallet",  "upstream": "https://tylerhodl.pages.dev" }
+]
