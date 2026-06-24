@@ -20,7 +20,7 @@ async function proxyUpstream(request) {
     upstream = 'https://haohaozhuanqian.pages.dev' + url.pathname + url.search;
   } else
   if (url.pathname === '/research' || url.pathname.startsWith('/research/')) {
-    upstream = 'https://research-hub.pages.dev' + url.pathname + url.search;
+    upstream = 'https://research-3sk.pages.dev' + url.pathname + url.search;
   } else
   if (url.pathname === '/wallet' || url.pathname.startsWith('/wallet/')) {
     upstream = 'https://tylerhodl.pages.dev' + url.pathname + url.search;
