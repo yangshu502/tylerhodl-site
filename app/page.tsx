@@ -35,6 +35,7 @@ export default function Home() {
   const [avatarErr, setAvatarErr] = useState(false)
   const [wxOpen, setWxOpen] = useState(false)
   const [wxPersonalOpen, setWxPersonalOpen] = useState(false)
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
   const wxRef = useRef<HTMLDivElement>(null)
   const wxPersonalRef = useRef<HTMLDivElement>(null)
 
@@ -60,6 +61,24 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
+
+      {/* ── QR Lightbox ────────────────────────────────────────────── */}
+      {lightboxSrc && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-6"
+          style={{ background: 'rgba(0,0,0,.88)', backdropFilter: 'blur(6px)' }}
+          onClick={() => setLightboxSrc(null)}
+        >
+          <div className="relative bg-white rounded-2xl p-5 shadow-2xl w-72 max-w-full" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setLightboxSrc(null)}
+              className="absolute -top-3.5 -right-3.5 w-8 h-8 rounded-full bg-black text-white text-lg font-bold flex items-center justify-center hover:bg-gray-800 transition-colors"
+            >×</button>
+            <img src={lightboxSrc} className="w-full h-auto rounded-xl block" alt="二维码" />
+            <p className="text-center text-xs text-gray-400 mt-3">对准摄像头扫码 · 或长按识别</p>
+          </div>
+        </div>
+      )}
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
@@ -99,7 +118,9 @@ export default function Home() {
                   </div>
                   <div className="w-full aspect-square rounded-xl overflow-hidden bg-white mb-3 flex items-center justify-center">
                     <img src="/wechat-personal.jpg" alt="TylerHodl个人微信"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain transition-transform duration-150 hover:scale-105"
+                      style={{ cursor: 'zoom-in' }}
+                      onClick={() => setLightboxSrc('/wechat-personal.jpg')}
                       onError={(e) => {
                         e.currentTarget.parentElement!.innerHTML =
                           '<p class="text-[9px] text-gray-400 text-center px-2">图片加载失败</p>'
@@ -135,7 +156,9 @@ export default function Home() {
                   </div>
                   <div className="w-full aspect-square rounded-xl overflow-hidden bg-white mb-3 flex items-center justify-center">
                     <img src="/qrcode-wechat.jpg" alt="扫码关注TylerWeb3"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain transition-transform duration-150 hover:scale-105"
+                      style={{ cursor: 'zoom-in' }}
+                      onClick={() => setLightboxSrc('/qrcode-wechat.jpg')}
                       onError={(e) => {
                         e.currentTarget.parentElement!.innerHTML =
                           '<p class="text-[9px] text-gray-400 text-center px-2">将二维码图片存至<br/>/public/qrcode-wechat.jpg</p>'
@@ -182,7 +205,7 @@ export default function Home() {
       </header>
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
-      <section className="flex-1 mx-auto max-w-screen-xl w-full px-6 pt-24 pb-16 flex flex-col items-center text-center">
+      <section className="flex-1 mx-auto max-w-screen-xl w-full px-6 pt-14 pb-16 flex flex-col items-center text-center">
 
         {/* Title */}
         <h1
