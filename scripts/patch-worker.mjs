@@ -18,12 +18,15 @@ async function proxyUpstream(request) {
   const url = new URL(request.url);
   let upstream = null;
   if (url.pathname === '/monitor' || url.pathname.startsWith('/monitor/')) {
-    upstream = 'https://monitor.pages.dev' + url.pathname + url.search;
+    upstream = 'https://haohaozhuanqian.pages.dev' + url.pathname + url.search;
   } else if (url.pathname === '/wallet' || url.pathname.startsWith('/wallet/')) {
-    upstream = 'https://wallet.pages.dev' + url.pathname + url.search;
+    upstream = 'https://tylerhodl.pages.dev' + url.pathname + url.search;
   }
   if (!upstream) return null;
-  const res = await fetch(upstream, {
+
+  // Use redirect:'manual' — CF Workers 跨 Zone 时 redirect:'follow' 会把 301 透传给浏览器
+  // 手动跟跳转，最多 5 跳，确保最终响应不含 Location 头
+  let res = await fetch(upstream, {
     method: request.method,
     headers: {
       'user-agent': request.headers.get('user-agent') ?? '',
@@ -31,11 +34,27 @@ async function proxyUpstream(request) {
       'accept-language': request.headers.get('accept-language') ?? '',
       'accept-encoding': 'identity',
     },
-    redirect: 'follow',
+    redirect: 'manual',
   });
+  for (let i = 0; i < 5 && res.status >= 300 && res.status < 400; i++) {
+    const loc = res.headers.get('location');
+    if (!loc) break;
+    upstream = new URL(loc, upstream).href;
+    res = await fetch(upstream, {
+      headers: {
+        'user-agent': request.headers.get('user-agent') ?? '',
+        'accept': request.headers.get('accept') ?? '*/*',
+        'accept-language': request.headers.get('accept-language') ?? '',
+        'accept-encoding': 'identity',
+      },
+      redirect: 'manual',
+    });
+  }
+
   const headers = new Headers(res.headers);
   headers.delete('transfer-encoding');
   headers.delete('content-encoding');
+  headers.delete('location'); // 绝不把上游跳转暴露给浏览器
   return new Response(res.body, { status: res.status, headers });
 }
 `;

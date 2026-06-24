@@ -22,7 +22,7 @@ async function proxyUpstream(request) {
     upstream = 'https://tylerhodl.pages.dev' + url.pathname + url.search;
   }
   if (!upstream) return null;
-  const res = await fetch(upstream, {
+  let res = await fetch(upstream, {
     method: request.method,
     headers: {
       'user-agent': request.headers.get('user-agent') ?? '',
@@ -30,11 +30,26 @@ async function proxyUpstream(request) {
       'accept-language': request.headers.get('accept-language') ?? '',
       'accept-encoding': 'identity',
     },
-    redirect: 'follow',
+    redirect: 'manual',
   });
+  for (let i = 0; i < 5 && res.status >= 300 && res.status < 400; i++) {
+    const loc = res.headers.get('location');
+    if (!loc) break;
+    upstream = new URL(loc, upstream).href;
+    res = await fetch(upstream, {
+      headers: {
+        'user-agent': request.headers.get('user-agent') ?? '',
+        'accept': request.headers.get('accept') ?? '*/*',
+        'accept-language': request.headers.get('accept-language') ?? '',
+        'accept-encoding': 'identity',
+      },
+      redirect: 'manual',
+    });
+  }
   const headers = new Headers(res.headers);
   headers.delete('transfer-encoding');
   headers.delete('content-encoding');
+  headers.delete('location');
   return new Response(res.body, { status: res.status, headers });
 }
 export default {
