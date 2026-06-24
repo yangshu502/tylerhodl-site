@@ -18,10 +18,17 @@ async function proxyUpstream(request) {
   let upstream = null;
   if (url.pathname === '/monitor' || url.pathname.startsWith('/monitor/')) {
     upstream = 'https://haohaozhuanqian.pages.dev' + url.pathname + url.search;
-  } else if (url.pathname === '/wallet' || url.pathname.startsWith('/wallet/')) {
+  } else
+  if (url.pathname === '/research' || url.pathname.startsWith('/research/')) {
+    upstream = 'https://research-hub.pages.dev' + url.pathname + url.search;
+  } else
+  if (url.pathname === '/wallet' || url.pathname.startsWith('/wallet/')) {
     upstream = 'https://tylerhodl.pages.dev' + url.pathname + url.search;
-  } else {}
+  } else
+  {}
   if (!upstream) return null;
+
+  // redirect:'manual' — CF Workers 跨 Zone 时 redirect:'follow' 会把 301 透传给浏览器
   let res = await fetch(upstream, {
     method: request.method,
     headers: {

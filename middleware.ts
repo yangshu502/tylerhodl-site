@@ -51,5 +51,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: PROXY_ROUTES.flatMap(r => [r.prefix, `${r.prefix}/:path*`]),
+  matcher: [
+    '/monitor', '/monitor/:path*',
+    '/research', '/research/:path*',
+    '/wallet', '/wallet/:path*',
+  ],
 }

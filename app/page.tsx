@@ -1,6 +1,6 @@
 'use client'
 
-import { Shield, TrendingUp, FlaskConical, ArrowUpRight, Zap, Sun, Moon, MessageCircle, ExternalLink, X } from 'lucide-react'
+import { Shield, TrendingUp, FlaskConical, BookOpen, ArrowUpRight, Zap, Sun, Moon, MessageCircle, ExternalLink, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; href: string | undefined; tag: string }[] = [
@@ -16,9 +16,17 @@ const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; 
     icon: TrendingUp,
     name: '好好赚钱监控面板',
     nameEn: 'Portfolio Monitor',
-    desc: '多资产投资组合收益追踪 + 纪律信号备忘录',
+    desc: '多资产投资组合收益追踪，实时异动盯盘',
     href: '/monitor/',
     tag: '投资追踪',
+  },
+  {
+    icon: BookOpen,
+    name: '投研工作台',
+    nameEn: 'Research Hub',
+    desc: '纪律化信号备忘录 · 赛道图谱 · 交易复盘',
+    href: '/research/',
+    tag: '投资研究',
   },
   {
     icon: FlaskConical,
