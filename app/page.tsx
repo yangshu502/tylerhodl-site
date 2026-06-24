@@ -1,6 +1,7 @@
 'use client'
 
-import { Shield, TrendingUp, FlaskConical, Github, ArrowUpRight, Zap } from 'lucide-react'
+import { Shield, TrendingUp, FlaskConical, ArrowUpRight, Zap, Sun, Moon, MessageCircle, ExternalLink, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; href: string | undefined; tag: string }[] = [
   {
@@ -30,6 +31,33 @@ const TOOLS: { icon: typeof Shield; name: string; nameEn: string; desc: string; 
 ]
 
 export default function Home() {
+  const [isDark, setIsDark] = useState(true)
+  const [avatarErr, setAvatarErr] = useState(false)
+  const [wxOpen, setWxOpen] = useState(false)
+  const [wxPersonalOpen, setWxPersonalOpen] = useState(false)
+  const wxRef = useRef<HTMLDivElement>(null)
+  const wxPersonalRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains('dark'))
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wxRef.current && !wxRef.current.contains(e.target as Node)) setWxOpen(false)
+      if (wxPersonalRef.current && !wxPersonalRef.current.contains(e.target as Node)) setWxPersonalOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const toggleTheme = () => {
+    const next = !isDark
+    setIsDark(next)
+    document.documentElement.classList[next ? 'add' : 'remove']('dark')
+    try { localStorage.setItem('tylerhodl_theme', next ? 'dark' : 'light') } catch {}
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
 
@@ -43,32 +71,125 @@ export default function Home() {
               Build in Web3
             </span>
           </div>
-          <a
-            href="https://github.com/tylerhodl"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-8 h-8 rounded-md border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-neon/50 transition-all"
-          >
-            <Github size={14} />
-          </a>
+
+          {/* Right controls */}
+          <div className="flex items-center gap-1.5">
+
+            {/* Personal WeChat */}
+            <div ref={wxPersonalRef} className="relative">
+              <button
+                onClick={() => { setWxPersonalOpen(v => !v); setWxOpen(false) }}
+                title="加我个人微信"
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border text-[10px] sm:text-xs font-medium transition-all ${
+                  wxPersonalOpen
+                    ? 'border-[#07C160]/60 bg-[#07C160]/10 text-[#07C160]'
+                    : 'border-border bg-secondary/40 text-muted-foreground hover:border-[#07C160]/40 hover:text-[#07C160]'
+                }`}
+              >
+                <MessageCircle size={10} />
+                <span className="hidden sm:inline">加微信</span>
+              </button>
+              {wxPersonalOpen && (
+                <div className="absolute right-0 top-full mt-2 z-50 w-44 rounded-2xl border border-border bg-card p-4 shadow-2xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] text-muted-foreground font-medium">个人微信</span>
+                    <button onClick={() => setWxPersonalOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                      <X size={11} />
+                    </button>
+                  </div>
+                  <div className="w-full aspect-square rounded-xl overflow-hidden bg-white mb-3 flex items-center justify-center">
+                    <img src="/wechat-personal.jpg" alt="TylerHodl个人微信"
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.parentElement!.innerHTML =
+                          '<p class="text-[9px] text-gray-400 text-center px-2">图片加载失败</p>'
+                      }} />
+                  </div>
+                  <p className="text-center text-xs font-bold text-foreground">TylerHodl</p>
+                  <p className="text-center text-[10px] text-muted-foreground mt-0.5">扫码加好友</p>
+                </div>
+              )}
+            </div>
+
+            {/* Public WeChat */}
+            <div ref={wxRef} className="relative">
+              <button
+                onClick={() => { setWxOpen(v => !v); setWxPersonalOpen(false) }}
+                title="微信公众号"
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border text-[10px] sm:text-xs font-medium transition-all ${
+                  wxOpen
+                    ? 'border-[#07C160]/60 bg-[#07C160]/10 text-[#07C160]'
+                    : 'border-border bg-secondary/40 text-muted-foreground hover:border-[#07C160]/40 hover:text-[#07C160]'
+                }`}
+              >
+                <MessageCircle size={10} />
+                <span className="hidden sm:inline">公众号</span>
+              </button>
+              {wxOpen && (
+                <div className="absolute right-0 top-full mt-2 z-50 w-44 rounded-2xl border border-border bg-card p-4 shadow-2xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] text-muted-foreground font-medium">微信公众号</span>
+                    <button onClick={() => setWxOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                      <X size={11} />
+                    </button>
+                  </div>
+                  <div className="w-full aspect-square rounded-xl overflow-hidden bg-white mb-3 flex items-center justify-center">
+                    <img src="/qrcode-wechat.jpg" alt="扫码关注TylerWeb3"
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.parentElement!.innerHTML =
+                          '<p class="text-[9px] text-gray-400 text-center px-2">将二维码图片存至<br/>/public/qrcode-wechat.jpg</p>'
+                      }} />
+                  </div>
+                  <p className="text-center text-xs font-bold text-foreground">TylerWeb3</p>
+                  <p className="text-center text-[10px] text-muted-foreground mt-0.5">微信扫码关注</p>
+                </div>
+              )}
+            </div>
+
+            {/* Twitter/X avatar */}
+            <a href="https://x.com/tylerhodl2049" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 group" title="@tylerhodl2049">
+              <div className="relative h-7 w-7 sm:h-8 sm:w-8 shrink-0">
+                <div className="h-full w-full rounded-full overflow-hidden border-2 border-neon/30 group-hover:border-neon/70 bg-neon/10 transition-colors flex items-center justify-center">
+                  {!avatarErr ? (
+                    <img src="/avatar-tyler.jpg" alt="太乐Tyler" className="h-full w-full object-cover" onError={() => setAvatarErr(true)} />
+                  ) : (
+                    <span className="text-neon font-bold text-xs">T</span>
+                  )}
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-neon border-2 border-background" />
+              </div>
+              <div className="hidden lg:block leading-tight">
+                <div className="flex items-center gap-0.5 text-xs font-semibold text-foreground group-hover:text-neon transition-colors">
+                  太乐Tyler
+                  <ExternalLink size={9} className="opacity-0 group-hover:opacity-50 transition-opacity" />
+                </div>
+                <div className="text-[10px] text-muted-foreground/70">@tylerhodl2049</div>
+              </div>
+            </a>
+
+            {/* Divider */}
+            <div className="h-4 w-px bg-border/60 mx-0.5" />
+
+            {/* Theme toggle */}
+            <button onClick={toggleTheme} title={isDark ? '切换为白天模式' : '切换为黑夜模式'}
+              className="flex items-center justify-center w-7 h-7 rounded-md border border-border bg-secondary/40 text-muted-foreground hover:text-foreground transition-colors">
+              {isDark ? <Sun size={13} /> : <Moon size={13} />}
+            </button>
+          </div>
         </div>
       </header>
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="flex-1 mx-auto max-w-screen-xl w-full px-6 pt-24 pb-16 flex flex-col items-center text-center">
 
-        {/* Badge */}
-        <div className="mb-10 inline-flex items-center gap-2 rounded-full border border-neon/25 bg-neon/5 px-4 py-1.5 text-xs text-neon/80">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-neon animate-pulse shrink-0" />
-          Web3 Builder · Crypto Investor · Content Creator
-        </div>
-
         {/* Title */}
         <h1
-          className="text-[clamp(3rem,10vw,7rem)] font-black tracking-tighter text-neon leading-none mb-6 select-none"
-          style={{ textShadow: '0 0 80px #C2E03A30, 0 0 20px #C2E03A18' }}
+          className="text-[clamp(3rem,10vw,7rem)] font-black tracking-tight text-neon leading-none mb-6 select-none"
+          style={{ textShadow: '0 0 80px #F7931A30, 0 0 20px #F7931A18' }}
         >
-          TYLERHODL
+          太乐 Tyler
         </h1>
 
         {/* Subtitle */}
@@ -109,7 +230,7 @@ export default function Home() {
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-5">
           {TOOLS.map((tool) => {
             const Icon = tool.icon
-            const isAvailable = tool.href !== null
+            const isAvailable = tool.href !== undefined
             const Wrapper = isAvailable ? 'a' : 'div'
             return (
               <Wrapper
@@ -117,7 +238,7 @@ export default function Home() {
                 {...(isAvailable ? { href: tool.href } : {})}
                 className={`group relative flex flex-col rounded-xl border bg-card p-6 text-left transition-all duration-300 ${
                   isAvailable
-                    ? 'border-border hover:border-neon/40 hover:shadow-[0_0_40px_#C2E03A0D] cursor-pointer'
+                    ? 'border-border hover:border-neon/40 hover:shadow-[0_0_40px_#F7931A0D] cursor-pointer'
                     : 'border-border/40 opacity-50 cursor-not-allowed'
                 }`}
               >
@@ -164,9 +285,9 @@ export default function Home() {
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <footer className="py-10 text-center select-none border-t border-border/30">
         <div className="flex items-center justify-center gap-6 mb-3">
-          <div className="h-px w-20" style={{ background: 'linear-gradient(to right, transparent, #C2E03A60)' }} />
+          <div className="h-px w-20" style={{ background: 'linear-gradient(to right, transparent, #F7931A60)' }} />
           <p className="text-[13px] font-light tracking-[0.42em] text-neon/80">无财作力，少有斗智，既饶争时</p>
-          <div className="h-px w-20" style={{ background: 'linear-gradient(to left, transparent, #C2E03A60)' }} />
+          <div className="h-px w-20" style={{ background: 'linear-gradient(to left, transparent, #F7931A60)' }} />
         </div>
         <p className="text-[10px] tracking-[0.3em] text-muted-foreground/40">——《史记·货殖列传》</p>
         <p className="mt-4 text-[11px] text-muted-foreground/25 tracking-widest">
